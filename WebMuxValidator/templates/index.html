@@ -1,0 +1,67 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10 col-lg-8">
+        <div class="card shadow">
+            <div class="card-header">
+                <h2 class="h4 mb-0">{{ translations.enter_validators }}</h2>
+            </div>
+            <div class="card-body">
+                <form id="validator-form" action="{{ url_for('process_validators') }}" method="POST">
+                    <input type="hidden" name="lang" value="{{ lang }}">
+                    
+                    <div class="mb-3">
+                        <textarea 
+                            class="form-control" 
+                            id="validators" 
+                            name="validators" 
+                            rows="10" 
+                            placeholder="{{ translations.validators_placeholder }}"
+                            required
+                        ></textarea>
+                        <div class="form-text text-muted">
+                            <i class="bi bi-info-circle"></i> 
+                            {{ translations.validators_placeholder }}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="start_epoch" class="form-label">{{ translations.start_epoch_label|default('Starting Epoch:') }}</label>
+                        <input 
+                            type="number" 
+                            class="form-control" 
+                            id="start_epoch" 
+                            name="start_epoch" 
+                            value="21"
+                            min="1"
+                            max="{{ current_epoch|default(24) }}"
+                        >
+                        <div class="form-text text-muted">
+                            <i class="bi bi-info-circle"></i> 
+                            {{ translations.start_epoch_hint|default('Select the epoch number to start the display from (default: 21)') }}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="d-grid gap-2">
+                            <button type="submit" id="submit-btn" class="btn btn-primary">
+                                <span id="loading-spinner" class="spinner-border spinner-border-sm me-2 d-none" role="status" aria-hidden="true"></span>
+                                {{ translations.submit }}
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Example -->
+                    <div class="mb-0">
+                        <p class="text-muted mb-2"><i class="bi bi-lightbulb"></i> Example validator hash:</p>
+                        <div class="bg-dark p-2 rounded">
+                            <code class="text-info">190f07bd27261bc9f2a2d125bf30d55e4756da9f10ae4c4aee70351f550a4705</code>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

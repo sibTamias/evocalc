@@ -1,0 +1,134 @@
+/* Only gray colors for styling */
+header h1 {
+    color: red !important;
+}
+
+.color-header {
+    color: #ffffff;
+    background-color: #444444;
+    font-weight: bold;
+}
+
+.color-total {
+    color: #ffffff;
+    background-color: #333333;
+    font-weight: bold;
+}
+
+.color-light-gray {
+    color: #aaaaaa;
+}
+
+.color-dark-gray {
+    color: #666666;
+}
+
+/* Layout improvements */
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+footer {
+    margin-top: auto;
+    padding: 1rem 0;
+}
+
+/* Table styles */
+.validator-cell {
+    font-family: monospace;
+    word-break: break-all;
+}
+
+.table-responsive {
+    overflow-x: auto;
+    max-width: 100%;
+}
+
+textarea.form-control {
+    font-family: monospace;
+    min-height: 200px;
+}
+
+/* Loading spinner */
+.spinner-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+    text-align: center;
+}
+
+#loading-details {
+    margin-top: 1rem;
+    max-width: 80%;
+}
+
+/* Custom toast position */
+.toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1050;
+}
+
+/* Language switcher */
+.lang-switch {
+    cursor: pointer;
+    text-decoration: none;
+    margin-left: 10px;
+}
+
+.lang-switch.active {
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+/* Custom Bootstrap overrides for better dark theme */
+.card {
+    background-color: #2a2a2a;
+    border-color: #444;
+}
+
+/* Error alert styling */
+.alert-danger {
+    background-color: rgba(153, 153, 153, 0.15); 
+    border-color: rgba(102, 102, 102, 0.4);
+    color: #cccccc;
+}
+
+.form-control, .form-select {
+    background-color: #333;
+    border-color: #444;
+    color: #fff;
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: #3a3a3a;
+    color: #fff;
+    border-color: #666666;
+}
+
+.form-control::placeholder {
+    color: #aaa;
+}
+
+/* Custom subtle color classes */
+.bg-dark-subtle {
+    background-color: #252525 !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .validator-cell {
+        max-width: 120px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}

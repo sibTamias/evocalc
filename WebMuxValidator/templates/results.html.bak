@@ -1,0 +1,121 @@
+{% extends "layout.html" %}
+<script>
+    // Передаем данные сразу в JS чтобы избежать парсинга
+    window.validatorsList = JSON.parse('{{ validators_json|safe }}');
+    window.translations = JSON.parse('{{ translations|tojson|safe }}');
+    window.currentLang = '{{ lang }}';
+</script>
+
+{% block content %}
+<div class="card shadow mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h2 class="h4 mb-0">{{ translations.title }}</h2>
+        <a href="{{ url_for('index', lang=lang) }}" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-arrow-left"></i> Back
+        </a>
+    </div>
+    <div class="card-body">
+        <!-- Loading indicator -->
+        <div id="loading-container" class="spinner-container">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">{{ translations.loading }}</span>
+            </div>
+            <span class="ms-3">{{ translations.loading }}</span>
+            <div class="mt-2 small text-muted" id="loading-details">
+                {{ translations.loading_validators }}
+            </div>
+        </div>
+        
+        <!-- Error display -->
+        <div id="error-container" class="alert alert-danger d-none" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <span id="error-message">{{ translations.error_fetching }}</span>
+        </div>
+        
+        <!-- Results container -->
+        <div id="results-container" class="d-none">
+            <div id="withdrawals-table-container" 
+                data-translator-validator="{{ translations.validator }}"
+                data-translator-total="{{ translations.total }}"
+                data-translator-grand-total="{{ translations.grand_total }}"
+                data-translator-epoch="{{ translations.epoch }}"
+                data-translator-no-data="{{ translations.no_data }}"
+                data-validators="{{ validators_json|safe }}"
+                data-lang="{{ lang }}"
+                data-start-epoch="{{ start_epoch|default(21) }}"
+            >
+                <!-- Table will be inserted here by JavaScript -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast notification is already in layout.html -->
+
+<!-- Validator list card -->
+<div class="card shadow">
+    <div class="card-header">
+        <h3 class="h5 mb-0">{{ translations.enter_validators }}</h3>
+    </div>
+    <div class="card-body">
+        <form id="validator-form" action="{{ url_for('process_validators') }}" method="POST">
+            <input type="hidden" name="lang" value="{{ lang }}">
+            
+            <div class="mb-3">
+                <textarea 
+                    class="form-control" 
+                    id="validators" 
+                    name="validators" 
+                    rows="6" 
+                    placeholder="{{ translations.validators_placeholder }}"
+                    required
+                >{% if validators_text %}{{ validators_text }}{% else %}{{ '\n'.join(validators) }}{% endif %}</textarea>
+            </div>
+            
+            <div class="mb-3">
+                <label for="start_epoch" class="form-label">{{ translations.start_epoch_label }}</label>
+                <input 
+                    type="number" 
+                    class="form-control" 
+                    id="start_epoch" 
+                    name="start_epoch" 
+                    value="{{ start_epoch|default(21) }}"
+                    min="1"
+                    max="{{ current_epoch|default(24) }}"
+                >
+                <div class="form-text text-muted">
+                    <i class="bi bi-info-circle"></i> 
+                    {{ translations.start_epoch_hint }}
+                </div>
+            </div>
+            
+            <div class="mb-0">
+                <button type="submit" id="submit-btn" class="btn btn-primary">
+                    <span id="loading-spinner" class="spinner-border spinner-border-sm me-2 d-none" role="status" aria-hidden="true"></span>
+                    {{ translations.submit }}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<!-- Add DataTables JS -->
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script>
+    // Define validators directly in JavaScript to avoid HTML escaping issues
+    // Store in window object to maintain validator order across function calls
+//     window.validatorsList = {{ validators_json|safe }};
+	window.validatorsList = {{ validators | tojson | safe }};
+    console.log("Validators preloaded:", window.validatorsList);
+//     console.log("Table container dataset:", tableContainer.dataset);
+
+    // Trigger data fetch automatically when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM loaded, triggering data fetch with preloaded validators...');
+        fetchWithdrawalsData(window.validatorsList);
+    });
+</script>
+{% endblock %}
