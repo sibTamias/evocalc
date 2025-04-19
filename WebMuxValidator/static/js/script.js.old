@@ -342,186 +342,186 @@ function renderWithdrawalsTable(data, originalValidatorsList) {
 //     errorMessage.textContent = message;
 // }
 
-// function renderWithdrawalsTable(data, originalValidatorsList) {
-//     const tableContainer = document.getElementById('withdrawals-table-container');
-//     if (!tableContainer) return;
-//     
-//     const { withdrawals, identities, validator_totals, grand_total, epoch_range, current_epoch, validator_ips } = data;
-//     
-//     // Store the original list of validators for proper ordering
-//     // If not provided, try to get from window object or data attribute
-//     if (!originalValidatorsList || !originalValidatorsList.length) {
-//         originalValidatorsList = window.validatorsList || [];
-//         
-//         // If still not available, try to get from data attribute (fallback)
-//         if (!originalValidatorsList || !originalValidatorsList.length) {
-// 
-// 			try {
-// 				const validatorsJson = tableContainer.dataset.validators || '[]';
-// 				if (!validatorsJson || validatorsJson.trim() === '') {
-// 					throw new Error('Empty validators data');
-// 				}
-// 				validators = JSON.parse(validatorsJson);
-// 			} catch (e) {
-// 				console.error('Error parsing validators:', e);
-// 				// Fallback to window object if available
-// 				if (window.validatorsList && Array.isArray(window.validatorsList)) {
-// 					validators = window.validatorsList;
-// 				} else {
-// 					showError(lang === 'ru' ? 
-// 						'Ошибка загрузки данных валидаторов' : 
-// 						'Error loading validator data');
-// 					return;
-// 				}
-// 			}                        
-// //             try {
-// //                 const validatorsJson = tableContainer.dataset.validators || '[]';
-// //                 originalValidatorsList = JSON.parse(validatorsJson);
-// //             } catch (e) {
-// //                 console.error('Error getting original validators list:', e);
-// //                 originalValidatorsList = Object.keys(withdrawals);
-// //             }
-//         }
-//     }
-//     
-//     // Get translations from HTML data attributes
-//     const translations = {
-//         validator: tableContainer.dataset.translatorValidator || 'Validator',
-//         total: tableContainer.dataset.translatorTotal || 'TOTAL',
-//         grandTotal: tableContainer.dataset.translatorGrandTotal || 'GRAND TOTAL',
-//         epoch: tableContainer.dataset.translatorEpoch || 'Epoch',
-//         noData: tableContainer.dataset.translatorNoData || 'No data available'
-//     };
-//     
-//     // Create table with gray styles (no striped rows)
-//     let tableHtml = `
-//     <div class="table-responsive">
-//         <table class="table table-dark table-bordered table-hover">
-//             <thead class="bg-dark">
-//                 <tr>
-//                     <th>${translations.validator}</th>
-//     `;
-//     
-//     // Add epoch headers with subtle alternating colors
-//     epoch_range.forEach((epoch, index) => {
-//         const bgClass = index % 2 === 0 ? 'bg-dark-subtle' : 'bg-dark';
-//         tableHtml += `<th class="${bgClass}">${epoch}</th>`;
-//     });
-//     
-//     // Add total header
-//     tableHtml += `<th class="bg-dark">${translations.total}</th></tr></thead><tbody>`;
-//     
-//     // Check if we have any data
-//     if (Object.keys(withdrawals).length === 0) {
-//         tableHtml += `<tr><td colspan="${epoch_range.length + 2}" class="text-center">${translations.noData}</td></tr>`;
-//     } else {
-//         // Iterate through validators in their original input order
-//         originalValidatorsList.forEach(validator => {
-//             // Skip if we don't have withdrawal data for this validator
-//             if (!withdrawals[validator]) return;
-//             
-//             const validatorData = withdrawals[validator];
-//             // Use server IP from validator_ips if available, otherwise use identity or truncated hash
-//             const serverIP = validator_ips && validator_ips[validator];
-//             const validatorName = serverIP || identities[validator] || validator.substring(0, 8) + '...';
-//             
-//             tableHtml += `<tr><td class="validator-cell">${validatorName}</td>`;
-//             
-//             // Add cells for each epoch with very subtle alternating column colors
-//             epoch_range.forEach((epoch, index) => {
-//                 const amount = validatorData[epoch] || 0;
-//                 // Divide by 1000 and format with 1 decimal place
-//                 const formattedAmount = amount > 0 ? (amount / 1000).toFixed(1) : '—';
-//                 // Using custom classes with very subtle color difference
-//                 const bgClass = index % 2 === 0 ? 'bg-dark-subtle' : 'bg-dark';
-//                 tableHtml += `<td class="text-end ${bgClass}">${formattedAmount}</td>`;
-//             });
-//             
-//             // Add total for this validator (divided by 1000 and rounded to 1 decimal place)
-//             const validatorTotal = validator_totals[validator] || 0;
-//             const formattedTotal = (validatorTotal / 1000).toFixed(1);
-//             tableHtml += `<td class="text-end bg-dark fw-bold">${formattedTotal}</td></tr>`;
-//         });
-//     }
-//     
-//     // Add grand total row
-//     tableHtml += `
-//         </tbody>
-//         <tfoot>
-//             <tr class="bg-dark text-white">
-//                 <td class="fw-bold">${translations.grandTotal}</td>
-//     `;
-//     
-//     // Empty cells for each epoch with subtle alternating colors
-//     epoch_range.forEach((_, index) => {
-//         const bgClass = index % 2 === 0 ? 'bg-dark-subtle' : 'bg-dark';
-//         tableHtml += `<td class="${bgClass}"></td>`;
-//     });
-//     
-//     // Grand total value (divided by 1000 and rounded to 1 decimal place)
-//     const formattedGrandTotal = (grand_total / 1000).toFixed(1);
-//     tableHtml += `<td class="text-end fw-bold bg-dark">${formattedGrandTotal}</td></tr>
-//         </tfoot>
-//         </table>
-//     </div>`;
-//     
-//     // Add copy button below the table
-//     tableHtml += `
-//     <div class="d-flex justify-content-end mt-3">
-//         <button id="copy-table-btn" class="btn btn-outline-secondary" title="Copy table to clipboard">
-//             <i class="bi bi-clipboard"></i> Copy Table
-//         </button>
-//     </div>`;
-//     
-//     // Render the table
-//     tableContainer.innerHTML = tableHtml;
-//     
-//     // Check if DataTable is available
-//     if (typeof DataTable !== 'undefined') {
-//         try {
-//             // Initialize DataTable for improved functionality
-//             const dataTable = new DataTable('table', {
-//                 paging: false,
-//                 ordering: false,
-//                 info: false,
-//                 searching: false
-//             });
-//             console.log('DataTable initialized');
-//         } catch (error) {
-//             console.error('Error initializing DataTable:', error);
-//         }
-//     } else {
-//         console.warn('DataTable library not loaded');
-//     }
-//     
-//     // Set up copy button functionality
-//     const copyButton = document.getElementById('copy-table-btn');
-//     if (copyButton) {
-//         copyButton.addEventListener('click', function() {
+function renderWithdrawalsTable(data, originalValidatorsList) {
+    const tableContainer = document.getElementById('withdrawals-table-container');
+    if (!tableContainer) return;
+    
+    const { withdrawals, identities, validator_totals, grand_total, epoch_range, current_epoch, validator_ips } = data;
+    
+    // Store the original list of validators for proper ordering
+    // If not provided, try to get from window object or data attribute
+    if (!originalValidatorsList || !originalValidatorsList.length) {
+        originalValidatorsList = window.validatorsList || [];
+        
+        // If still not available, try to get from data attribute (fallback)
+        if (!originalValidatorsList || !originalValidatorsList.length) {
+
+			try {
+				const validatorsJson = tableContainer.dataset.validators || '[]';
+				if (!validatorsJson || validatorsJson.trim() === '') {
+					throw new Error('Empty validators data');
+				}
+				validators = JSON.parse(validatorsJson);
+			} catch (e) {
+				console.error('Error parsing validators:', e);
+				// Fallback to window object if available
+				if (window.validatorsList && Array.isArray(window.validatorsList)) {
+					validators = window.validatorsList;
+				} else {
+					showError(lang === 'ru' ? 
+						'Ошибка загрузки данных валидаторов' : 
+						'Error loading validator data');
+					return;
+				}
+			}                        
 //             try {
-//                 const tableElement = tableContainer.querySelector('table');
-//                 const range = document.createRange();
-//                 range.selectNode(tableElement);
-//                 window.getSelection().removeAllRanges();
-//                 window.getSelection().addRange(range);
-//                 document.execCommand('copy');
-//                 window.getSelection().removeAllRanges();
-//                 
-//                 // Show toast notification if available
-//                 const toastElement = document.getElementById('copy-toast');
-//                 if (toastElement && typeof bootstrap !== 'undefined') {
-//                     const toast = new bootstrap.Toast(toastElement);
-//                     toast.show();
-//                 } else {
-//                     // Fallback notification
-//                     alert('Table copied to clipboard!');
-//                 }
-//             } catch (error) {
-//                 console.error('Error copying table:', error);
-//                 alert('Failed to copy table to clipboard');
+//                 const validatorsJson = tableContainer.dataset.validators || '[]';
+//                 originalValidatorsList = JSON.parse(validatorsJson);
+//             } catch (e) {
+//                 console.error('Error getting original validators list:', e);
+//                 originalValidatorsList = Object.keys(withdrawals);
 //             }
-//         });
-//     } else {
-//         console.warn('Copy button not found');
-//     }
-// }
+        }
+    }
+    
+    // Get translations from HTML data attributes
+    const translations = {
+        validator: tableContainer.dataset.translatorValidator || 'Validator',
+        total: tableContainer.dataset.translatorTotal || 'TOTAL',
+        grandTotal: tableContainer.dataset.translatorGrandTotal || 'GRAND TOTAL',
+        epoch: tableContainer.dataset.translatorEpoch || 'Epoch',
+        noData: tableContainer.dataset.translatorNoData || 'No data available'
+    };
+    
+    // Create table with gray styles (no striped rows)
+    let tableHtml = `
+    <div class="table-responsive">
+        <table class="table table-dark table-bordered table-hover">
+            <thead class="bg-dark">
+                <tr>
+                    <th>${translations.validator}</th>
+    `;
+    
+    // Add epoch headers with subtle alternating colors
+    epoch_range.forEach((epoch, index) => {
+        const bgClass = index % 2 === 0 ? 'bg-dark-subtle' : 'bg-dark';
+        tableHtml += `<th class="${bgClass}">${epoch}</th>`;
+    });
+    
+    // Add total header
+    tableHtml += `<th class="bg-dark">${translations.total}</th></tr></thead><tbody>`;
+    
+    // Check if we have any data
+    if (Object.keys(withdrawals).length === 0) {
+        tableHtml += `<tr><td colspan="${epoch_range.length + 2}" class="text-center">${translations.noData}</td></tr>`;
+    } else {
+        // Iterate through validators in their original input order
+        originalValidatorsList.forEach(validator => {
+            // Skip if we don't have withdrawal data for this validator
+            if (!withdrawals[validator]) return;
+            
+            const validatorData = withdrawals[validator];
+            // Use server IP from validator_ips if available, otherwise use identity or truncated hash
+            const serverIP = validator_ips && validator_ips[validator];
+            const validatorName = serverIP || identities[validator] || validator.substring(0, 8) + '...';
+            
+            tableHtml += `<tr><td class="validator-cell">${validatorName}</td>`;
+            
+            // Add cells for each epoch with very subtle alternating column colors
+            epoch_range.forEach((epoch, index) => {
+                const amount = validatorData[epoch] || 0;
+                // Divide by 1000 and format with 1 decimal place
+                const formattedAmount = amount > 0 ? (amount / 1000).toFixed(1) : '—';
+                // Using custom classes with very subtle color difference
+                const bgClass = index % 2 === 0 ? 'bg-dark-subtle' : 'bg-dark';
+                tableHtml += `<td class="text-end ${bgClass}">${formattedAmount}</td>`;
+            });
+            
+            // Add total for this validator (divided by 1000 and rounded to 1 decimal place)
+            const validatorTotal = validator_totals[validator] || 0;
+            const formattedTotal = (validatorTotal / 1000).toFixed(1);
+            tableHtml += `<td class="text-end bg-dark fw-bold">${formattedTotal}</td></tr>`;
+        });
+    }
+    
+    // Add grand total row
+    tableHtml += `
+        </tbody>
+        <tfoot>
+            <tr class="bg-dark text-white">
+                <td class="fw-bold">${translations.grandTotal}</td>
+    `;
+    
+    // Empty cells for each epoch with subtle alternating colors
+    epoch_range.forEach((_, index) => {
+        const bgClass = index % 2 === 0 ? 'bg-dark-subtle' : 'bg-dark';
+        tableHtml += `<td class="${bgClass}"></td>`;
+    });
+    
+    // Grand total value (divided by 1000 and rounded to 1 decimal place)
+    const formattedGrandTotal = (grand_total / 1000).toFixed(1);
+    tableHtml += `<td class="text-end fw-bold bg-dark">${formattedGrandTotal}</td></tr>
+        </tfoot>
+        </table>
+    </div>`;
+    
+    // Add copy button below the table
+    tableHtml += `
+    <div class="d-flex justify-content-end mt-3">
+        <button id="copy-table-btn" class="btn btn-outline-secondary" title="Copy table to clipboard">
+            <i class="bi bi-clipboard"></i> Copy Table
+        </button>
+    </div>`;
+    
+    // Render the table
+    tableContainer.innerHTML = tableHtml;
+    
+    // Check if DataTable is available
+    if (typeof DataTable !== 'undefined') {
+        try {
+            // Initialize DataTable for improved functionality
+            const dataTable = new DataTable('table', {
+                paging: false,
+                ordering: false,
+                info: false,
+                searching: false
+            });
+            console.log('DataTable initialized');
+        } catch (error) {
+            console.error('Error initializing DataTable:', error);
+        }
+    } else {
+        console.warn('DataTable library not loaded');
+    }
+    
+    // Set up copy button functionality
+    const copyButton = document.getElementById('copy-table-btn');
+    if (copyButton) {
+        copyButton.addEventListener('click', function() {
+            try {
+                const tableElement = tableContainer.querySelector('table');
+                const range = document.createRange();
+                range.selectNode(tableElement);
+                window.getSelection().removeAllRanges();
+                window.getSelection().addRange(range);
+                document.execCommand('copy');
+                window.getSelection().removeAllRanges();
+                
+                // Show toast notification if available
+                const toastElement = document.getElementById('copy-toast');
+                if (toastElement && typeof bootstrap !== 'undefined') {
+                    const toast = new bootstrap.Toast(toastElement);
+                    toast.show();
+                } else {
+                    // Fallback notification
+                    alert('Table copied to clipboard!');
+                }
+            } catch (error) {
+                console.error('Error copying table:', error);
+                alert('Failed to copy table to clipboard');
+            }
+        });
+    } else {
+        console.warn('Copy button not found');
+    }
+}
