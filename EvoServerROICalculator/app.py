@@ -4,13 +4,6 @@ import requests
 from datetime import datetime
 import os
 
-# Page configuration
-# st.set_page_config(
-#     page_title="Dash Evonode ROI Calculator",
-#     page_icon="💰",
-#     layout="wide"
-# )
-
 st.set_page_config(
     page_title="Dash Evonode ROI Calculator",
     page_icon="favicon.ico",
